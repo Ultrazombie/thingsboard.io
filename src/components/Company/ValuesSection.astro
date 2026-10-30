@@ -1,364 +1,361 @@
 ---
-import { getImage } from 'astro:assets';
-import Mark from '../ui/Mark.astro';
-import img1 from '~/assets/images/company-images/values-images/values-image1.webp';
-import img2 from '~/assets/images/company-images/values-images/values-image2.webp';
-import img3 from '~/assets/images/company-images/values-images/values-image3.webp';
-import img4 from '~/assets/images/company-images/values-images/values-image4.webp';
-import img5 from '~/assets/images/company-images/values-images/values-image5.webp';
-import img6 from '~/assets/images/company-images/values-images/values-image6.webp';
-
-const [o1, o2, o3, o4, o5, o6] = await Promise.all([
-	getImage({ src: img1 }),
-	getImage({ src: img2 }),
-	getImage({ src: img3 }),
-	getImage({ src: img4 }),
-	getImage({ src: img5 }),
-	getImage({ src: img6 }),
-]);
-
-// Each value's mark: a tabler icon in one of the kit's accent colours.
-const MARKS = [
-	{ icon: 'tabler:target-arrow', accent: 'var(--color-accent-brand)' },
-	{ icon: 'tabler:heart-handshake', accent: 'var(--color-accent-cyan)' },
-	{ icon: 'tabler:plant-2', accent: 'var(--color-accent-onprem)' },
-	{ icon: 'tabler:award', accent: 'var(--color-accent-amber)' },
-	{ icon: 'tabler:users-group', accent: 'var(--color-accent-violet)' },
-	{ icon: 'tabler:heart', accent: 'var(--color-accent-red)' },
-];
-
-const values = [
-	{ src: o1.src, title: 'Results-driven', description: 'We focus on delivering practical outcomes, ensuring every IoT solution provides measurable value for our clients.' },
-	{ src: o2.src, title: 'Customer focus', description: 'Our customers are at the core of our business; we tailor our IoT solutions to meet their unique needs and exceed expectations.' },
-	{ src: o3.src, title: 'Growth and Self-improvement', description: 'We embrace continuous learning and innovation to stay at the forefront of IoT technology.' },
-	{ src: o4.src, title: 'Expertise', description: 'Our commitment to excellence and integrity ensures that we deliver reliable, high-quality products.' },
-	{ src: o5.src, title: 'Team work', description: 'Collaboration drives our success, as we harness the strengths of our team to deliver IoT innovations.' },
-	{ src: o6.src, title: 'Volunteering', description: 'We actively support our community through impactful initiatives, demonstrating our dedication to creating positive change.' },
-];
+/**
+ * "Our values", composed as the homepage hero: a black band, the words on the left (the section's
+ * name as the faded kicker, the value as the headline, its sentence as the lede, the dots where the
+ * hero has its buttons) and the photo on the right, faded in from the black. Slides cross-fade; no
+ * scrim, blur or pattern. The earlier full-bleed version is `ValuesSectionOverlay`.
+ */
+import { Image } from 'astro:assets';
+import { companyValues } from '~/data/company/values';
+import '@styles/ui-kit.scss';
 ---
 
-<section class="values-section">
-	<h2 class="values-title">Our values</h2>
-	<div class="values-wrapper">
-		<div class="values-viewport">
-			<div class="values-track">
-				{values.map((item, i) => (
-					<div class={`values-slide${i === 0 ? ' active' : ''}`} style={`background-image: url(${item.src})`}>
-						<div class="values-text">
-							<Mark size={64} icon={MARKS[i].icon} accent={MARKS[i].accent} lift class="values-mark" />
-							<h3 class="values-card-title">{item.title}</h3>
-							<p class="values-card-desc">{item.description}</p>
-						</div>
-					</div>
-				))}
-			</div>
-			<div class="values-dots print:hidden">
-				{values.map((_, i) => (
-					<button class={`values-dot${i === 0 ? ' active' : ''}`} aria-label={`Slide ${i + 1}`}></button>
-				))}
-			</div>
+<section class="values" data-values-split aria-roledescription="carousel" aria-labelledby="values-title">
+	<div class="values__copy">
+		<h2 class="values__kicker" id="values-title">Our values</h2>
+		<div class="values__texts">
+			{companyValues.map((value, i) => (
+				<div class:list={['values__text', i === 0 && 'is-active']} aria-hidden={i === 0 ? undefined : 'true'}>
+					<h3 class="values__title">{value.title}</h3>
+					<p class="values__lede">{value.description}</p>
+				</div>
+			))}
 		</div>
+		<div class="values__dots print:hidden">
+			{companyValues.map((value, i) => (
+				<button
+					type="button"
+					class:list={['values__dot', i === 0 && 'is-active']}
+					aria-label={value.title}
+					aria-current={i === 0 ? 'true' : undefined}
+				/>
+			))}
+		</div>
+	</div>
+	<div class="values__panel print:hidden" aria-hidden="true">
+		{companyValues.map((value, i) => (
+			<Image
+				src={value.image}
+				alt=""
+				widths={[640, 960, 1280, 1920]}
+				sizes="(min-width: 1024px) 60vw, 100vw"
+				loading="lazy"
+				class:list={['values__photo', i === 0 && 'is-active']}
+			/>
+		))}
 	</div>
 </section>
 
 <style lang="scss">
 	@use '../../styles/variables' as *;
+	@use '../../styles/ui' as *;
 
-	.values-section {
-		overflow: hidden;
-		background: var(--color-bg-surface);
-		padding-bottom: $spacing-20;
-		opacity: 0;
+	// The copy column's width, on the side-by-side layout.
+	$copy-w: 440px;
+
+	// Same ground and ink as the homepage hero, which is always black. `--band-gutter` resolves its
+	// 100% against the box it pads, so only boxes as wide as the page take it: the copy when the two
+	// stack, the band's own left edge when they sit side by side (the photo runs to the right edge).
+	.values {
+		display: grid;
+		grid-template-columns: 1fr;
+		background-color: #000;
+		color: #fff;
+
+		@include media-up(lg) {
+			grid-template-columns: $copy-w minmax(0, 1fr);
+			min-height: 560px;
+			padding-left: var(--band-gutter);
+		}
 	}
 
-	.values-section.animate {
-		animation: reveal-ltr 0.8s ease-in-out forwards, opacity-reveal 1.5s ease-out forwards;
+	.values__copy {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding: $spacing-16 var(--band-gutter) $spacing-10;
+
+		@include media-up(lg) {
+			padding: $spacing-20 $spacing-10 $spacing-20 0;
+		}
 	}
 
-	@keyframes reveal-ltr {
-		from { clip-path: inset(0 100% 0 0); }
-		to   { clip-path: inset(0 0 0 0); }
-	}
-
-	@keyframes opacity-reveal {
-		from { opacity: 0; }
-		to   { opacity: 1; }
-	}
-
-	.values-title {
-		@include section-title;
-		font-weight: $font-weight-bold;
-		color: var(--color-text);
-		text-align: center;
-		padding: $spacing-12 var(--band-gutter);
+	// The kicker and the value's title read as the hero's two-line headline.
+	.values__kicker,
+	.values__title {
+		@include hero-title;
 		margin: 0;
+		text-wrap: balance;
 	}
 
-	.values-wrapper {
-		max-width: 1920px;
-		margin: 0 auto;
-		position: relative;
+	// The hero's kicker: the same fade as its first title line.
+	.values__kicker {
+		background-image: linear-gradient(to bottom, rgb(255 255 255 / 62%), rgb(255 255 255 / 38%));
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
 	}
 
-	.values-viewport {
-		overflow: visible;
+	// Every value's words share one cell, so the column is as tall as the longest and nothing jumps.
+	.values__texts {
+		display: grid;
+	}
+
+	.values__text {
+		grid-area: 1 / 1;
+		opacity: 0;
+		visibility: hidden;
+		transform: translate3d(0, 16px, 0);
+		transition:
+			opacity 0.5s ease,
+			transform 0.5s ease,
+			visibility 0s 0.5s;
+
+		&.is-active {
+			opacity: 1;
+			visibility: visible;
+			transform: none;
+			transition:
+				opacity 0.5s ease 0.15s,
+				transform 0.5s ease 0.15s;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			transform: none;
+			transition: none;
+
+			&.is-active {
+				transition: none;
+			}
+		}
+	}
+
+	.values__title {
+		margin-bottom: $spacing-5;
+	}
+
+	.values__lede {
+		@include text-m;
+		font-size: $font-size-lg;
+		color: #fff;
+		max-width: 44ch;
+		margin: 0;
+		text-wrap: pretty;
+	}
+
+	.values__dots {
+		display: flex;
+		gap: $spacing-2;
+		margin-top: $spacing-8;
+	}
+
+	.values__dot {
 		position: relative;
+		width: 12px;
+		height: 12px;
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background: var(--color-white);
+		opacity: 0.5;
+		cursor: pointer;
+		transition:
+			opacity 0.3s ease,
+			background-color 0.3s ease;
+		@include focus-ring(3px);
+		@include touch-target(12px);
+
+		&:hover {
+			opacity: 1;
+		}
+
+		&.is-active {
+			background: var(--accent-fill);
+			opacity: 1;
+		}
+	}
+
+	.values__dot:focus-visible {
+		outline-color: #fff;
+	}
+
+	// The photo: cropped to the panel, faded in from the band's black. A paint over the photo, as the
+	// hero's, not a mask.
+	.values__panel {
+		position: relative;
+		aspect-ratio: 3 / 2;
+		overflow: hidden;
 		cursor: grab;
+		touch-action: pan-y;
 
-		&.dragging {
+		&.is-dragging {
 			cursor: grabbing;
 		}
-	}
 
-	.values-track {
-		display: flex;
-		transition: transform 0.5s ease;
-	}
-
-	.values-slide {
-		flex: 0 0 100%;
-		height: 756px;
-		background-size: cover;
-		background-position: center;
-		background-repeat: no-repeat;
-		position: relative;
-		display: flex;
-		align-items: center;
-		filter: blur(8px);
-		transform: scale(0.9);
-		transition: filter 0.5s ease, transform 0.5s ease;
-
-		&.active {
-			filter: blur(0);
-			transform: scale(1);
+		@include media-up(md) {
+			aspect-ratio: 16 / 9;
 		}
 
-		// Dark color overlay + backdrop blur
+		@include media-up(lg) {
+			aspect-ratio: auto;
+		}
+
 		&::after {
 			content: '';
 			position: absolute;
 			inset: 0;
-			background-color: #3f474f99;
-			backdrop-filter: blur(4px);
-			z-index: 1;
+			pointer-events: none;
+			background-image: linear-gradient(
+				to bottom,
+				#000 0,
+				rgb(0 0 0 / 82%) 24px,
+				rgb(0 0 0 / 50%) 48px,
+				rgb(0 0 0 / 18%) 72px,
+				rgb(0 0 0 / 0%) 96px
+			);
+
+			@include media-up(lg) {
+				background-image: linear-gradient(
+					to right,
+					#000 0,
+					rgb(0 0 0 / 90%) 40px,
+					rgb(0 0 0 / 68%) 90px,
+					rgb(0 0 0 / 38%) 140px,
+					rgb(0 0 0 / 12%) 190px,
+					rgb(0 0 0 / 0%) 240px
+				);
+			}
 		}
-
-		// ThingsBoard pattern overlay
-		&::before {
-			content: '';
-			position: absolute;
-			inset: 0;
-			background-image: url('/tbstyled-bg.svg');
-			background-repeat: no-repeat;
-			opacity: 0.3;
-			z-index: 2;
-		}
 	}
 
-	// The photo runs full width; the words sit on the page measure.
-	.values-text {
-		position: relative;
-		z-index: 3;
-		padding: $spacing-8 var(--band-gutter);
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		gap: $spacing-4;
-	}
-
-	.values-card-title {
-		font-size: 96px;
-		font-weight: $font-weight-medium;
-		line-height: 125%;
-		color: var(--color-white);
-		margin: 0;
-	}
-
-	.values-card-desc {
-		font-size: $font-size-5xl;
-		font-weight: $font-weight-normal;
-		line-height: 140%;
-		color: var(--color-white);
-		max-width: 935px;
-		margin: 0;
-	}
-
-	.values-dots {
+	.values__photo {
 		position: absolute;
-		bottom: 5px;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		display: flex;
-		align-items: center;
-		z-index: 4;
-	}
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0;
+		transition: opacity 0.8s ease;
+		user-select: none;
+		-webkit-user-drag: none;
 
-	.values-dot {
-		width: 12px;
-		height: 12px;
-		border-radius: 50%;
-		border: none;
-		background: var(--color-white);
-		cursor: pointer;
-		padding: 0;
-		margin: 5px 7px;
-		transition: background 0.3s ease;
-
-		&.active,
-		&:hover {
-			background: var(--accent-fill);
+		&.is-active {
+			opacity: 1;
 		}
-	}
 
-	@include media-down(xl) {
-		.values-card-title { font-size: 64px; }
-	}
-
-	@include media-down(lg) {
-		.values-card-title { font-size: 56px; }
-		.values-card-desc { font-size: $font-size-4xl; }
-	}
-
-	@include media-down(md) {
-		.values-card-title { font-size: 40px; }
-		.values-text :global(.values-mark) { --mark-size: 48px; --mark-icon: 28px; }
-		.values-title { padding-block: $spacing-14 $spacing-8; }
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
+		}
 	}
 
 	@media print {
-		.values-section {
-			opacity: 1;
-			overflow: visible;
-		}
-
-		.values-track {
+		.values {
 			display: block;
-			transform: none !important;
-		}
-
-		.values-slide {
-			height: auto;
-			margin-bottom: 24px;
-			filter: none;
-			transform: none;
-			background-image: none !important;
-			break-inside: avoid;
-
-			&::before,
-			&::after {
-				content: none;
-			}
-		}
-
-		.values-text :global(.values-mark) {
-			display: none;
-		}
-
-		.values-text {
-			padding: 0;
-			gap: 8px;
-		}
-
-		.values-card-title {
-			font-size: $font-size-3xl;
+			background: none;
 			color: var(--color-text);
 		}
 
-		.values-card-desc {
-			font-size: $font-size-lg;
+		.values__copy {
+			padding: $spacing-6 0;
+		}
+
+		.values__kicker {
+			background-image: none;
+			color: var(--color-text);
+			margin-bottom: $spacing-4;
+		}
+
+		.values__texts {
+			display: block;
+		}
+
+		.values__text {
+			opacity: 1;
+			visibility: visible;
+			transform: none;
+			margin-bottom: $spacing-4;
+			break-inside: avoid;
+		}
+
+		.values__title {
+			font-size: $font-size-3xl;
+			margin-bottom: $spacing-2;
+		}
+
+		.values__lede {
 			color: var(--color-text);
 		}
 	}
 </style>
 
 <script>
-	const section = document.querySelector('.values-section') as HTMLElement;
-	const track = document.querySelector('.values-track') as HTMLElement;
-	const viewport = document.querySelector('.values-viewport') as HTMLElement;
-	const slides = document.querySelectorAll('.values-slide');
-	const dots = document.querySelectorAll('.values-dot');
-	const total = slides.length;
-	let current = 0;
+	const section = document.querySelector<HTMLElement>('[data-values-split]');
 
-	function goTo(index: number): void {
-		slides[current].classList.remove('active');
-		dots[current].classList.remove('active');
-		current = (index + total) % total;
-		slides[current].classList.add('active');
-		dots[current].classList.add('active');
-		track.style.transform = `translateX(-${current * 100}%)`;
+	if (section) {
+		const texts = section.querySelectorAll<HTMLElement>('.values__text');
+		const photos = section.querySelectorAll<HTMLElement>('.values__photo');
+		const dots = section.querySelectorAll<HTMLButtonElement>('.values__dot');
+		const panel = section.querySelector<HTMLElement>('.values__panel')!;
+		const total = texts.length;
+		const AUTOPLAY_INTERVAL = 6000;
+		let current = 0;
+		let timer: ReturnType<typeof setInterval> | undefined;
+
+		const goTo = (index: number) => {
+			const next = (index + total) % total;
+			if (next === current) return;
+			for (const list of [texts, photos, dots]) {
+				list[current].classList.remove('is-active');
+				list[next].classList.add('is-active');
+			}
+			texts[current].setAttribute('aria-hidden', 'true');
+			texts[next].removeAttribute('aria-hidden');
+			dots[current].removeAttribute('aria-current');
+			dots[next].setAttribute('aria-current', 'true');
+			current = next;
+		};
+
+		// Autoplay only where motion is welcome, and only while the band is on screen and not in use.
+		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		let visible = false;
+		let held = false;
+		const stop = () => {
+			clearInterval(timer);
+			timer = undefined;
+		};
+		const sync = () => {
+			stop();
+			if (!reduce && visible && !held) timer = setInterval(() => goTo(current + 1), AUTOPLAY_INTERVAL);
+		};
+
+		new IntersectionObserver(([entry]) => {
+			visible = entry.isIntersecting;
+			sync();
+		}).observe(section);
+
+		section.addEventListener('pointerenter', () => ((held = true), sync()));
+		section.addEventListener('pointerleave', () => ((held = false), sync()));
+		section.addEventListener('focusin', () => ((held = true), sync()));
+		section.addEventListener('focusout', () => ((held = false), sync()));
+
+		dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+
+		// A swipe on the photo steps one value.
+		let startX: number | null = null;
+		panel.addEventListener('pointerdown', (e) => {
+			startX = e.clientX;
+			panel.classList.add('is-dragging');
+		});
+		window.addEventListener('pointerup', (e) => {
+			if (startX === null) return;
+			const diff = startX - e.clientX;
+			startX = null;
+			panel.classList.remove('is-dragging');
+			if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
+		});
+		window.addEventListener('pointercancel', () => {
+			startX = null;
+			panel.classList.remove('is-dragging');
+		});
 	}
-
-	dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); resetAutoplay(); }));
-
-	// Autoplay
-	const AUTOPLAY_INTERVAL = 5000;
-	let autoplayTimer: ReturnType<typeof setInterval>;
-
-	function startAutoplay(): void {
-		autoplayTimer = setInterval(() => goTo(current + 1), AUTOPLAY_INTERVAL);
-	}
-
-	function stopAutoplay(): void {
-		clearInterval(autoplayTimer);
-	}
-
-	function resetAutoplay(): void {
-		stopAutoplay();
-		startAutoplay();
-	}
-
-	startAutoplay();
-
-	// Drag
-	let dragging = false;
-	let dragStartX = 0;
-	let didDrag = false;
-
-	function startDrag(clientX: number): void {
-		dragging = true;
-		didDrag = false;
-		dragStartX = clientX;
-		track.style.transition = 'none';
-		viewport.classList.add('dragging');
-		stopAutoplay();
-	}
-
-	function endDrag(clientX: number): void {
-		if (!dragging) return;
-		dragging = false;
-		viewport.classList.remove('dragging');
-		track.style.transition = '';
-		const diff = dragStartX - clientX;
-		if (Math.abs(diff) > 50) {
-			didDrag = true;
-			goTo(diff > 0 ? current + 1 : current - 1);
-		} else {
-			track.style.transform = `translateX(-${current * 100}%)`;
-		}
-		startAutoplay();
-	}
-
-	viewport.addEventListener('mousedown', (e) => { startDrag(e.clientX); e.preventDefault(); });
-	window.addEventListener('mouseup', (e) => { endDrag(e.clientX); });
-	viewport.addEventListener('touchstart', (e) => { startDrag(e.touches[0].clientX); }, { passive: true });
-	window.addEventListener('touchend', (e) => { endDrag(e.changedTouches[0].clientX); });
-
-	viewport.addEventListener('click', (e) => {
-		if (didDrag) { e.stopPropagation(); didDrag = false; }
-	}, true);
-
-	// Scroll reveal
-	const observer = new IntersectionObserver(
-		(entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					section.classList.add('animate');
-					observer.unobserve(entry.target);
-				}
-			});
-		},
-		{ threshold: 0.3 }
-	);
-	observer.observe(section);
 </script>
