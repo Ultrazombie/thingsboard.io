@@ -156,13 +156,18 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 		list-style: none;
 	}
 
-	// One person: photo, name, title. Width follows the text so neither wraps on wide screens.
+	// One person: photo, name, title. Every person gets the same column, so the rows keep one rhythm
+	// whatever the titles' lengths; a long title wraps inside it.
+	$person-col: 168px;
+	$lead-col: 200px;
+
 	.person {
 		display: flex;
+		flex: 0 0 $person-col;
 		flex-direction: column;
 		align-items: center;
-		min-width: 120px;
 		text-align: center;
+		text-wrap: balance;
 
 		img {
 			width: 104px;
@@ -178,22 +183,26 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 
 	.person-name {
 		@include type-tile;
-		white-space: nowrap;
 		color: var(--color-text);
 	}
 
 	.person-role {
 		@include type-small;
-		white-space: nowrap;
 		color: var(--color-text-secondary);
 	}
 
+	// At most four leaders a row, so seven split 4 + 3 instead of leaving one alone.
 	.leaders {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
 		gap: $spacing-8 $spacing-6;
-		margin-bottom: $spacing-16;
+		max-width: calc(#{$lead-col} * 4 + #{$spacing-6} * 3);
+		margin: 0 auto $spacing-16;
+
+		.person {
+			flex-basis: $lead-col;
+		}
 
 		.person img {
 			width: 120px;
@@ -461,7 +470,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		gap: $spacing-8 $spacing-8;
+		gap: $spacing-8 $spacing-6;
 	}
 
 	.team-join {
@@ -470,11 +479,10 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 		margin-top: $spacing-20;
 	}
 
-	// Phones: fixed columns again, and long names and titles may wrap.
+	// Phones: three to a row in the panels, two in the leaders.
 	@include media-down(md) {
 		.person {
-			width: 112px;
-			min-width: 0;
+			flex-basis: calc((100% - #{$spacing-2} * 2) / 3);
 
 			img {
 				width: 84px;
@@ -482,13 +490,12 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 			}
 		}
 
-		.person-name,
-		.person-role {
-			white-space: normal;
-		}
-
 		.leaders {
 			gap: $spacing-6 $spacing-2;
+
+			.person {
+				flex-basis: calc((100% - #{$spacing-2}) / 2);
+			}
 		}
 
 		.leaders .person img {

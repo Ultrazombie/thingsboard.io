@@ -1,4 +1,7 @@
 ---
+import { Icon } from 'astro-icon/components';
+import '@styles/ui-kit.scss';
+
 const timeline = [
 	{ year: '2016', events: ['2 co-founders', 'Release of CE', '100 first GitHub ⭐'] },
 	{ year: '2017', events: ['10 employees', 'IoT Gateway 🚀'] },
@@ -12,6 +15,20 @@ const timeline = [
 	{ year: '2025', events: ['110 employees', 'ThingsBoard MCP 🚀', '20K+ GitHub ⭐'] },
 	{ year: '2026', events: ['ISO Certified', 'AI tools for IoT 🚀', 'IoT Hub release'] },
 ];
+
+// Each event's bullet is a kit icon in the colour of its kind; the emoji it ended with becomes that icon.
+const KINDS = [
+	{ test: /employees|co-founders/, icon: 'tabler:users', color: 'var(--color-accent-graphite)' },
+	{ test: /GitHub/, icon: 'tabler:star', color: 'var(--color-accent-amber)' },
+	{ test: /🏆/, icon: 'tabler:trophy', color: 'var(--color-accent-amber)' },
+	{ test: /ISO/, icon: 'tabler:certificate', color: 'var(--color-accent-cyan)' },
+	{ test: /🚀|[Rr]elease|SDK|dashboards/, icon: 'tabler:rocket', color: 'var(--color-accent-brand)' },
+];
+const OTHER = { icon: 'tabler:sparkles', color: 'var(--color-accent-violet)' };
+const eventOf = (text: string) => {
+	const kind = KINDS.find((k) => k.test.test(text)) ?? OTHER;
+	return { text: text.replace(/\s*(⭐|🚀|🏆)$/u, ''), icon: kind.icon, color: kind.color };
+};
 ---
 
 <section class="timeline-section">
@@ -26,8 +43,11 @@ const timeline = [
 							<span class="timeline-circle print:hidden"></span>
 						</div>
 						<ul class="timeline-text">
-							{item.events.map((event) => (
-								<li>{event}</li>
+							{item.events.map(eventOf).map((event) => (
+								<li style={`--event-color: ${event.color}`}>
+									<Icon name={event.icon} class="timeline-event-icon" aria-hidden="true" />
+									{event.text}
+								</li>
 							))}
 						</ul>
 					</div>
@@ -97,7 +117,7 @@ const timeline = [
 		left: 5%;
 		width: 90%;
 		height: 5px;
-		background: var(--color-product-ce);
+		background: var(--accent-fill);
 		pointer-events: none;
 		z-index: 0;
 	}
@@ -133,13 +153,12 @@ const timeline = [
 
 	.timeline-title {
 		font-size: $font-size-2xl;
-		color: var(--color-product-ce);
+		color: var(--accent-fill);
 		font-weight: $font-weight-medium;
 		line-height: 40px;
 		display: flex;
 		justify-content: center;
 		align-items: flex-end;
-		text-shadow: 4px 4px 4px color-mix(in srgb, var(--color-product-ce) 15%, transparent);
 		transform: scale(1.6);
 		transform-origin: bottom;
 	}
@@ -148,7 +167,7 @@ const timeline = [
 		width: $circle-size;
 		height: $circle-size;
 		border-radius: 50%;
-		border: 2px solid var(--color-product-ce);
+		border: 2px solid var(--accent-fill);
 		background: var(--color-bg-surface);
 	}
 
@@ -159,15 +178,25 @@ const timeline = [
 		list-style: none;
 
 		li {
+			display: flex;
+			align-items: flex-start;
+			gap: $spacing-2;
 			color: var(--color-text-secondary);
 			line-height: 30px;
 			font-size: $font-size-lg;
-			list-style-type: disc;
-			list-style-position: inside;
 			opacity: 0;
 			transform: translateY(20px);
 			transition: opacity 0.5s ease, transform 0.5s ease;
 		}
+	}
+
+	.timeline-event-icon {
+		flex: none;
+		width: 20px;
+		height: 20px;
+		// Centred on the first of the 30px lines.
+		margin-top: 5px;
+		color: var(--event-color);
 	}
 
 	/* Revealed state (set once by the entrance animation) */
@@ -189,7 +218,7 @@ const timeline = [
 		border: none;
 		background: none;
 		cursor: pointer;
-		color: var(--color-product-ce);
+		color: var(--accent-fill);
 		padding: 0;
 		align-items: center;
 		justify-content: center;
@@ -263,7 +292,6 @@ const timeline = [
 
 		.timeline-title {
 			transform: none;
-			text-shadow: none;
 		}
 
 		.timeline-text li {

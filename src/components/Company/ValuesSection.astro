@@ -1,5 +1,6 @@
 ---
 import { getImage } from 'astro:assets';
+import Mark from '../ui/Mark.astro';
 import img1 from '~/assets/images/company-images/values-images/values-image1.webp';
 import img2 from '~/assets/images/company-images/values-images/values-image2.webp';
 import img3 from '~/assets/images/company-images/values-images/values-image3.webp';
@@ -15,6 +16,16 @@ const [o1, o2, o3, o4, o5, o6] = await Promise.all([
 	getImage({ src: img5 }),
 	getImage({ src: img6 }),
 ]);
+
+// Each value's mark: a tabler icon in one of the kit's accent colours.
+const MARKS = [
+	{ icon: 'tabler:target-arrow', accent: 'var(--color-accent-brand)' },
+	{ icon: 'tabler:heart-handshake', accent: 'var(--color-accent-cyan)' },
+	{ icon: 'tabler:plant-2', accent: 'var(--color-accent-onprem)' },
+	{ icon: 'tabler:award', accent: 'var(--color-accent-amber)' },
+	{ icon: 'tabler:users-group', accent: 'var(--color-accent-violet)' },
+	{ icon: 'tabler:heart', accent: 'var(--color-accent-red)' },
+];
 
 const values = [
 	{ src: o1.src, title: 'Results-driven', description: 'We focus on delivering practical outcomes, ensuring every IoT solution provides measurable value for our clients.' },
@@ -34,6 +45,7 @@ const values = [
 				{values.map((item, i) => (
 					<div class={`values-slide${i === 0 ? ' active' : ''}`} style={`background-image: url(${item.src})`}>
 						<div class="values-text">
+							<Mark size={64} icon={MARKS[i].icon} accent={MARKS[i].accent} lift class="values-mark" />
 							<h3 class="values-card-title">{item.title}</h3>
 							<p class="values-card-desc">{item.description}</p>
 						</div>
@@ -184,9 +196,9 @@ const values = [
 	.values-dot {
 		width: 12px;
 		height: 12px;
-		border-radius: 0;
+		border-radius: 50%;
 		border: none;
-		background: var(--color-border-light);
+		background: var(--color-white);
 		cursor: pointer;
 		padding: 0;
 		margin: 5px 7px;
@@ -194,7 +206,7 @@ const values = [
 
 		&.active,
 		&:hover {
-			background: var(--color-product-ce);
+			background: var(--accent-fill);
 		}
 	}
 
@@ -209,6 +221,7 @@ const values = [
 
 	@include media-down(md) {
 		.values-card-title { font-size: 40px; }
+		.values-text :global(.values-mark) { --mark-size: 48px; --mark-icon: 28px; }
 		.values-title { padding-block: $spacing-14 $spacing-8; }
 	}
 
@@ -235,6 +248,10 @@ const values = [
 			&::after {
 				content: none;
 			}
+		}
+
+		.values-text :global(.values-mark) {
+			display: none;
 		}
 
 		.values-text {

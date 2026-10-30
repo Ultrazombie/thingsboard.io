@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import '@styles/ui-kit.scss';
 import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 ---
 
@@ -23,7 +24,7 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 	@use '../../styles/variables' as *;
 
 	.about-section {
-		background: var(--color-bg-light);
+		background: var(--band-tint);
 		padding: $spacing-12 0;
 		overflow: hidden;
 	}
