@@ -347,11 +347,13 @@ import '@styles/ui-kit.scss';
 		const goTo = (index: number) => {
 			const next = (index + total) % total;
 			if (next === current) return place();
-			const forward = next > current;
-			// Past either end (autoplay wrapping round): a short fade rather than a sweep across them all.
-			const wraps = Math.abs(next - current) === last && total > 2;
+			// Only autoplay asks for an index past either end; it loops round with a short fade rather
+			// than a sweep back across every photo, and keeps moving forward. A jump between the first
+			// and last value (a dot, a key) slides like any other.
+			const wraps = index < 0 || index > last;
+			const forward = wraps ? index > last : next > current;
 
-			textBox.style.setProperty('--dir', forward !== wraps ? '1' : '-1');
+			textBox.style.setProperty('--dir', forward ? '1' : '-1');
 			texts.forEach((t) => t.classList.remove('is-leaving'));
 			texts[current].classList.add('is-leaving');
 			texts[current].classList.remove('is-active');
@@ -433,6 +435,11 @@ import '@styles/ui-kit.scss';
 
 		card.addEventListener('pointermove', (e) => {
 			if (!start || e.pointerId !== start.id) return;
+			// The press ended where the card could not hear it (released outside before the drag began).
+			if (!(e.buttons & 1)) {
+				start = null;
+				return;
+			}
 			const dx = e.clientX - start.x;
 			if (!dragging) {
 				if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(e.clientY - start.y)) return;
