@@ -50,10 +50,12 @@ const values = [
 </section>
 
 <style lang="scss">
+	@use '../../styles/variables' as *;
+
 	.values-section {
 		overflow: hidden;
-		background: #ffffff;
-		padding-bottom: 80px;
+		background: var(--color-bg-surface);
+		padding-bottom: $spacing-20;
 		opacity: 0;
 	}
 
@@ -72,12 +74,11 @@ const values = [
 	}
 
 	.values-title {
-		font-size: 48px;
-		font-weight: 600;
-		line-height: 72px;
-		color: #212529;
+		@include section-title;
+		font-weight: $font-weight-bold;
+		color: var(--color-text);
 		text-align: center;
-		padding: 50px 0;
+		padding: $spacing-12 var(--band-gutter);
 		margin: 0;
 	}
 
@@ -142,31 +143,30 @@ const values = [
 		}
 	}
 
+	// The photo runs full width; the words sit on the page measure.
 	.values-text {
 		position: relative;
 		z-index: 3;
-		padding: 30px;
-		max-width: 1430px;
+		padding: $spacing-8 var(--band-gutter);
 		width: 100%;
-		margin: 0 auto;
 		display: flex;
 		flex-direction: column;
-		gap: 15px;
+		gap: $spacing-4;
 	}
 
 	.values-card-title {
 		font-size: 96px;
-		font-weight: 500;
+		font-weight: $font-weight-medium;
 		line-height: 125%;
-		color: #fff;
+		color: var(--color-white);
 		margin: 0;
 	}
 
 	.values-card-desc {
-		font-size: 36px;
-		font-weight: 400;
+		font-size: $font-size-5xl;
+		font-weight: $font-weight-normal;
 		line-height: 140%;
-		color: #fff;
+		color: var(--color-white);
 		max-width: 935px;
 		margin: 0;
 	}
@@ -186,33 +186,30 @@ const values = [
 		height: 12px;
 		border-radius: 0;
 		border: none;
-		background: #ccc;
+		background: var(--color-border-light);
 		cursor: pointer;
 		padding: 0;
 		margin: 5px 7px;
 		transition: background 0.3s ease;
 
-		&.active {
-			background: #305680;
-		}
-
+		&.active,
 		&:hover {
-			background: #305680;
+			background: var(--color-product-ce);
 		}
 	}
 
-	@media (max-width: 1279px) {
+	@include media-down(xl) {
 		.values-card-title { font-size: 64px; }
 	}
 
-	@media (max-width: 959px) {
+	@include media-down(lg) {
 		.values-card-title { font-size: 56px; }
-		.values-card-desc { font-size: 32px; }
+		.values-card-desc { font-size: $font-size-4xl; }
 	}
 
-	@media (max-width: 599px) {
+	@include media-down(md) {
 		.values-card-title { font-size: 40px; }
-		.values-title { padding: 60px 0; }
+		.values-title { padding-block: $spacing-14 $spacing-8; }
 	}
 
 	@media print {
@@ -246,13 +243,13 @@ const values = [
 		}
 
 		.values-card-title {
-			font-size: 28px;
-			color: #212529;
+			font-size: $font-size-3xl;
+			color: var(--color-text);
 		}
 
 		.values-card-desc {
-			font-size: 18px;
-			color: #212529;
+			font-size: $font-size-lg;
+			color: var(--color-text);
 		}
 	}
 </style>

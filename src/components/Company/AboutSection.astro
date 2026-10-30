@@ -23,33 +23,30 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 	@use '../../styles/variables' as *;
 
 	.about-section {
-		background: #f7f9fc;
-		padding: 50px 0;
+		background: var(--color-bg-light);
+		padding: $spacing-12 0;
 		overflow: hidden;
 	}
 
 	.about-container {
-		max-width: 1390px;
-		padding: 0 20px;
-		margin: 0 auto;
+		padding-inline: var(--band-gutter);
 		overflow: hidden;
 	}
 
 	.section-title {
-		font-size: 48px;
-		font-weight: 600;
-		line-height: 72px;
-		color: #212529;
+		@include section-title;
+		font-weight: $font-weight-bold;
+		color: var(--color-text);
 		text-align: center;
 		padding: 0;
-		margin: 0 0 50px;
+		margin: 0 0 $spacing-12;
 	}
 
 	.about-content {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 80px;
+		gap: $spacing-20;
 		opacity: 0;
 	}
 
@@ -95,22 +92,19 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 	.about-text-block {
 		display: flex;
 		flex-direction: column;
-		gap: 30px;
+		gap: $spacing-6;
 	}
 
 	.about-text {
-		font-size: 18px;
-		font-weight: 400;
-		line-height: 32px;
-		letter-spacing: 0.15px;
-		color: #000000c2;
+		@include body-text;
+		color: var(--color-text-secondary);
 		margin: 0;
 	}
 
-	@media (max-width: 959px) {
+	@include media-down(lg) {
 		.about-content {
 			flex-direction: column;
-			gap: 50px;
+			gap: $spacing-12;
 		}
 
 		.about-content.animate {
@@ -121,22 +115,17 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 		}
 	}
 
-	@media (max-width: 600px) {
+	@include media-down(md) {
 		.about-section {
-			padding: 70px 0;
+			padding: $spacing-16 0;
 		}
 
 		.section-title {
-			padding: 60px 0 0;
-			margin-bottom: 30px;
+			margin-bottom: $spacing-8;
 		}
 
 		.about-logo-block img {
 			width: 160px;
-		}
-
-		.about-content {
-			gap: 50px;
 		}
 	}
 
@@ -172,7 +161,7 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 
 <script>
 	const content = document.querySelector('.about-content') as HTMLElement;
-	const threshold = window.innerWidth <= 959 ? 0.2 : 0.4;
+	const threshold = window.innerWidth < 1024 ? 0.2 : 0.4;
 
 	const observer = new IntersectionObserver(
 		(entries) => {

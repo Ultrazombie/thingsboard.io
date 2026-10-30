@@ -129,13 +129,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 	}
 
 	.team-wrapper {
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 0 $spacing-8;
-
-		@include media-down(md) {
-			padding: 0 $spacing-4;
-		}
+		padding-inline: var(--band-gutter);
 	}
 
 	// Eyebrow with a hairline either side: names the block without competing with the title.

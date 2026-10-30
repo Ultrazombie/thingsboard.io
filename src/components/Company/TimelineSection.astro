@@ -48,14 +48,16 @@ const timeline = [
 </section>
 
 <style lang="scss">
+	@use '../../styles/variables' as *;
+
 	// Vertical centre of the year markers. .timeline-line and .timeline-nav both sit on
 	// this axis, so the offset lives in one place instead of being hand-edited in two.
 	$circle-size: 20px;
 	$axis-top: calc(10px + 40px + 10px + #{$circle-size} * 0.5); // padding-top + title + label-gap + circle centre
 
 	.timeline-section {
-		background: #ffffff;
-		padding: 50px 0 80px;
+		background: var(--color-bg-surface);
+		padding: $spacing-12 0 $spacing-20;
 		opacity: 0;
 	}
 
@@ -73,10 +75,9 @@ const timeline = [
 		to   { opacity: 1; }
 	}
 
+	// Margin, not padding: the arrows hang off this box's edges, so the box is the measure itself.
 	.timeline-wrapper {
-		max-width: 1390px;
-		padding: 0 20px;
-		margin: 0 auto;
+		margin-inline: var(--band-gutter);
 		position: relative;
 	}
 
@@ -96,7 +97,7 @@ const timeline = [
 		left: 5%;
 		width: 90%;
 		height: 5px;
-		background: #305680;
+		background: var(--color-product-ce);
 		pointer-events: none;
 		z-index: 0;
 	}
@@ -131,14 +132,14 @@ const timeline = [
 	}
 
 	.timeline-title {
-		font-size: 24px;
-		color: #305680;
-		font-weight: 500;
+		font-size: $font-size-2xl;
+		color: var(--color-product-ce);
+		font-weight: $font-weight-medium;
 		line-height: 40px;
 		display: flex;
 		justify-content: center;
 		align-items: flex-end;
-		text-shadow: 4px 4px 4px rgba(48, 86, 128, 0.15);
+		text-shadow: 4px 4px 4px color-mix(in srgb, var(--color-product-ce) 15%, transparent);
 		transform: scale(1.6);
 		transform-origin: bottom;
 	}
@@ -147,8 +148,8 @@ const timeline = [
 		width: $circle-size;
 		height: $circle-size;
 		border-radius: 50%;
-		border: 2px solid #305680;
-		background: #fff;
+		border: 2px solid var(--color-product-ce);
+		background: var(--color-bg-surface);
 	}
 
 	.timeline-text {
@@ -158,9 +159,9 @@ const timeline = [
 		list-style: none;
 
 		li {
-			color: #000000c2;
+			color: var(--color-text-secondary);
 			line-height: 30px;
-			font-size: 18px;
+			font-size: $font-size-lg;
 			list-style-type: disc;
 			list-style-position: inside;
 			opacity: 0;
@@ -188,7 +189,7 @@ const timeline = [
 		border: none;
 		background: none;
 		cursor: pointer;
-		color: #305680;
+		color: var(--color-product-ce);
 		padding: 0;
 		align-items: center;
 		justify-content: center;
