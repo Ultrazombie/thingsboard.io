@@ -1,48 +1,53 @@
 ---
 /**
- * "Our values", composed as the homepage hero: a black band, the words on the left (the section's
- * name as the faded kicker, the value as the headline, its sentence as the lede, the dots where the
- * hero has its buttons) and the photo on the right, faded in from the black. Slides cross-fade; no
- * scrim, blur or pattern. The earlier full-bleed version is `ValuesSectionOverlay`.
+ * "Our values": the section's title, then a black card on the page measure — the value's words in a
+ * third (its mark, title and sentence, the dots underneath) and its photo in the other two, faded in
+ * from the black as the homepage hero's footage is. Contained because the photos are not sharp enough
+ * to run full width. Slides cross-fade; no scrim, blur or pattern. The earlier full-bleed version is
+ * `ValuesSectionOverlay`.
  */
 import { Image } from 'astro:assets';
+import Mark from '../ui/Mark.astro';
 import { companyValues } from '~/data/company/values';
 import '@styles/ui-kit.scss';
 ---
 
 <section class="values" data-values-split aria-roledescription="carousel" aria-labelledby="values-title">
-	<div class="values__copy">
-		<h2 class="values__kicker" id="values-title">Our values</h2>
-		<div class="values__texts">
-			{companyValues.map((value, i) => (
-				<div class:list={['values__text', i === 0 && 'is-active']} aria-hidden={i === 0 ? undefined : 'true'}>
-					<h3 class="values__title">{value.title}</h3>
-					<p class="values__lede">{value.description}</p>
-				</div>
-			))}
+	<h2 class="values__heading" id="values-title">Our values</h2>
+	<div class="values__card">
+		<div class="values__copy">
+			<div class="values__texts">
+				{companyValues.map((value, i) => (
+					<div class:list={['values__text', i === 0 && 'is-active']} aria-hidden={i === 0 ? undefined : 'true'}>
+						<Mark size={48} icon={value.mark.icon} accent={value.mark.accent} class="values__mark" />
+						<h3 class="values__title">{value.title}</h3>
+						<p class="values__lede">{value.description}</p>
+					</div>
+				))}
+			</div>
+			<div class="values__dots print:hidden">
+				{companyValues.map((value, i) => (
+					<button
+						type="button"
+						class:list={['values__dot', i === 0 && 'is-active']}
+						aria-label={value.title}
+						aria-current={i === 0 ? 'true' : undefined}
+					/>
+				))}
+			</div>
 		</div>
-		<div class="values__dots print:hidden">
+		<div class="values__panel print:hidden" aria-hidden="true">
 			{companyValues.map((value, i) => (
-				<button
-					type="button"
-					class:list={['values__dot', i === 0 && 'is-active']}
-					aria-label={value.title}
-					aria-current={i === 0 ? 'true' : undefined}
+				<Image
+					src={value.image}
+					alt=""
+					widths={[640, 960, 1280, 1920]}
+					sizes="(min-width: 1024px) 700px, 100vw"
+					loading="lazy"
+					class:list={['values__photo', i === 0 && 'is-active']}
 				/>
 			))}
 		</div>
-	</div>
-	<div class="values__panel print:hidden" aria-hidden="true">
-		{companyValues.map((value, i) => (
-			<Image
-				src={value.image}
-				alt=""
-				widths={[640, 960, 1280, 1920]}
-				sizes="(min-width: 1024px) 60vw, 100vw"
-				loading="lazy"
-				class:list={['values__photo', i === 0 && 'is-active']}
-			/>
-		))}
 	</div>
 </section>
 
@@ -50,50 +55,49 @@ import '@styles/ui-kit.scss';
 	@use '../../styles/variables' as *;
 	@use '../../styles/ui' as *;
 
-	// The copy column's width, on the side-by-side layout.
-	$copy-w: 440px;
-
-	// Same ground and ink as the homepage hero, which is always black. `--band-gutter` resolves its
-	// 100% against the box it pads, so only boxes as wide as the page take it: the copy when the two
-	// stack, the band's own left edge when they sit side by side (the photo runs to the right edge).
+	// The section is page-wide, so `--band-gutter` (which resolves its 100% against the box it pads)
+	// puts the card on the page measure.
 	.values {
+		padding: $spacing-12 var(--band-gutter) $spacing-20;
+		background: var(--color-bg-surface);
+	}
+
+	// As the page's other section titles.
+	.values__heading {
+		@include section-title;
+		font-weight: $font-weight-bold;
+		color: var(--color-text);
+		text-align: center;
+		margin: 0 0 $spacing-12;
+	}
+
+	// The homepage hero's ground and ink. Stacked below lg (words, then photo); from lg the words take
+	// a third and the photo two.
+	.values__card {
 		display: grid;
 		grid-template-columns: 1fr;
+		overflow: hidden;
+		isolation: isolate;
+		border-radius: $radius-xl;
 		background-color: #000;
 		color: #fff;
 
 		@include media-up(lg) {
-			grid-template-columns: $copy-w minmax(0, 1fr);
-			min-height: 560px;
-			padding-left: var(--band-gutter);
+			grid-template-columns: 1fr 2fr;
+			min-height: 440px;
 		}
 	}
 
 	.values__copy {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		padding: $spacing-16 var(--band-gutter) $spacing-10;
+		justify-content: space-between;
+		gap: $spacing-8;
+		padding: $spacing-8 $spacing-6;
 
-		@include media-up(lg) {
-			padding: $spacing-20 $spacing-10 $spacing-20 0;
+		@include media-up(md) {
+			padding: $spacing-10;
 		}
-	}
-
-	// The kicker and the value's title read as the hero's two-line headline.
-	.values__kicker,
-	.values__title {
-		@include hero-title;
-		margin: 0;
-		text-wrap: balance;
-	}
-
-	// The hero's kicker: the same fade as its first title line.
-	.values__kicker {
-		background-image: linear-gradient(to bottom, rgb(255 255 255 / 62%), rgb(255 255 255 / 38%));
-		-webkit-background-clip: text;
-		background-clip: text;
-		color: transparent;
 	}
 
 	// Every value's words share one cell, so the column is as tall as the longest and nothing jumps.
@@ -103,9 +107,13 @@ import '@styles/ui-kit.scss';
 
 	.values__text {
 		grid-area: 1 / 1;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: $spacing-3;
 		opacity: 0;
 		visibility: hidden;
-		transform: translate3d(0, 16px, 0);
+		transform: translate3d(0, 12px, 0);
 		transition:
 			opacity 0.5s ease,
 			transform 0.5s ease,
@@ -128,17 +136,23 @@ import '@styles/ui-kit.scss';
 				transition: none;
 			}
 		}
+
+		// Mark renders the element, so this component's scope does not reach it.
+		:global(.values__mark) {
+			margin-bottom: $spacing-3;
+		}
 	}
 
 	.values__title {
-		margin-bottom: $spacing-5;
+		@include type-section;
+		margin: 0;
+		text-wrap: balance;
 	}
 
 	.values__lede {
-		@include text-m;
-		font-size: $font-size-lg;
-		color: #fff;
-		max-width: 44ch;
+		@include type-body;
+		color: rgb(255 255 255 / 72%);
+		max-width: 40ch;
 		margin: 0;
 		text-wrap: pretty;
 	}
@@ -146,24 +160,23 @@ import '@styles/ui-kit.scss';
 	.values__dots {
 		display: flex;
 		gap: $spacing-2;
-		margin-top: $spacing-8;
 	}
 
 	.values__dot {
 		position: relative;
-		width: 12px;
-		height: 12px;
+		width: 10px;
+		height: 10px;
 		padding: 0;
 		border: none;
 		border-radius: 50%;
 		background: var(--color-white);
-		opacity: 0.5;
+		opacity: 0.45;
 		cursor: pointer;
 		transition:
 			opacity 0.3s ease,
 			background-color 0.3s ease;
 		@include focus-ring(3px);
-		@include touch-target(12px);
+		@include touch-target(10px);
 
 		&:hover {
 			opacity: 1;
@@ -179,21 +192,16 @@ import '@styles/ui-kit.scss';
 		outline-color: #fff;
 	}
 
-	// The photo: cropped to the panel, faded in from the band's black. A paint over the photo, as the
-	// hero's, not a mask.
+	// The photo, cropped to its cell and faded in from the card's black: from the top when stacked,
+	// from the left beside the words. A paint over the photo, as the hero's, not a mask.
 	.values__panel {
 		position: relative;
-		aspect-ratio: 3 / 2;
-		overflow: hidden;
+		aspect-ratio: 16 / 9;
 		cursor: grab;
 		touch-action: pan-y;
 
 		&.is-dragging {
 			cursor: grabbing;
-		}
-
-		@include media-up(md) {
-			aspect-ratio: 16 / 9;
 		}
 
 		@include media-up(lg) {
@@ -208,21 +216,19 @@ import '@styles/ui-kit.scss';
 			background-image: linear-gradient(
 				to bottom,
 				#000 0,
-				rgb(0 0 0 / 82%) 24px,
-				rgb(0 0 0 / 50%) 48px,
-				rgb(0 0 0 / 18%) 72px,
-				rgb(0 0 0 / 0%) 96px
+				rgb(0 0 0 / 70%) 16px,
+				rgb(0 0 0 / 30%) 40px,
+				rgb(0 0 0 / 0%) 64px
 			);
 
 			@include media-up(lg) {
 				background-image: linear-gradient(
 					to right,
 					#000 0,
-					rgb(0 0 0 / 90%) 40px,
-					rgb(0 0 0 / 68%) 90px,
-					rgb(0 0 0 / 38%) 140px,
-					rgb(0 0 0 / 12%) 190px,
-					rgb(0 0 0 / 0%) 240px
+					rgb(0 0 0 / 75%) 24px,
+					rgb(0 0 0 / 40%) 56px,
+					rgb(0 0 0 / 12%) 88px,
+					rgb(0 0 0 / 0%) 120px
 				);
 			}
 		}
@@ -250,19 +256,17 @@ import '@styles/ui-kit.scss';
 
 	@media print {
 		.values {
+			padding: $spacing-6 0;
+		}
+
+		.values__card {
 			display: block;
 			background: none;
 			color: var(--color-text);
 		}
 
 		.values__copy {
-			padding: $spacing-6 0;
-		}
-
-		.values__kicker {
-			background-image: none;
-			color: var(--color-text);
-			margin-bottom: $spacing-4;
+			padding: 0;
 		}
 
 		.values__texts {
@@ -275,11 +279,14 @@ import '@styles/ui-kit.scss';
 			transform: none;
 			margin-bottom: $spacing-4;
 			break-inside: avoid;
+
+			:global(.values__mark) {
+				display: none;
+			}
 		}
 
 		.values__title {
-			font-size: $font-size-3xl;
-			margin-bottom: $spacing-2;
+			font-size: $font-size-2xl;
 		}
 
 		.values__lede {
