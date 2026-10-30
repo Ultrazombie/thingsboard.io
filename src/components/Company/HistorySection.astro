@@ -7,7 +7,7 @@ import historyImg from '~/assets/images/company-images/history-image.webp';
 <section class="history-section">
 	<div class="history-container">
 		<h2 class="section-title">Our history</h2>
-		<div class="history-content">
+		<div class="history-content" data-reveal>
 			<div class="history-text-block">
 				<p class="history-text">ThingsBoard started in 2016 as a vision shared by two co-founders: to create an IoT platform that would simplify the complex process of connecting devices, managing data, and visualizing insights. From the very beginning, we were driven by the belief that IoT should be accessible to businesses of all sizes.</p>
 				<p class="history-text">What began as a small project quickly grew into a global movement. Our first release captured the attention of developers and businesses worldwide, laying the foundation for a vibrant community. In 2018, we established ThingsBoard Inc., a company focused on scaling our mission and supporting our growing global customer and user base.</p>
@@ -54,11 +54,6 @@ import historyImg from '~/assets/images/company-images/history-image.webp';
 		align-items: flex-start;
 		gap: $spacing-20;
 		padding-bottom: $spacing-12;
-		opacity: 0;
-	}
-
-	.history-content.animate {
-		animation: slide-from-bottom 0.8s ease-out forwards, opacity-reveal 1s ease-out forwards;
 	}
 
 	.history-text-block {
@@ -89,16 +84,6 @@ import historyImg from '~/assets/images/company-images/history-image.webp';
 		flex-shrink: 0;
 	}
 
-	@keyframes slide-from-bottom {
-		from { transform: translateY(100%); }
-		to   { transform: translateY(0); }
-	}
-
-	@keyframes opacity-reveal {
-		from { opacity: 0; }
-		to   { opacity: 1; }
-	}
-
 	@include media-down(lg) {
 		.history-content {
 			flex-direction: column-reverse;
@@ -113,33 +98,9 @@ import historyImg from '~/assets/images/company-images/history-image.webp';
 	}
 
 	@media print {
-		.history-content {
-			opacity: 1 !important;
-			transform: none !important;
-		}
-
 		.history-image {
 			width: auto;
 			max-height: 35vh;
 		}
 	}
 </style>
-
-<script>
-	const content = document.querySelector('.history-content') as HTMLElement;
-	const threshold = window.innerWidth < 1024 ? 0.1 : 0.2;
-
-	const observer = new IntersectionObserver(
-		(entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					content.classList.add('animate');
-					observer.unobserve(entry.target);
-				}
-			});
-		},
-		{ threshold }
-	);
-
-	observer.observe(content);
-</script>

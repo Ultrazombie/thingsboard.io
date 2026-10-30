@@ -7,7 +7,7 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 <section class="about-section">
 	<div class="about-container">
 		<h1 class="section-title">About Us</h1>
-		<div class="about-content">
+		<div class="about-content" data-reveal>
 			<div class="about-logo-block">
 				<Image src={tbLogo} alt="ThingsBoard logo" width={257} height={257} />
 			</div>
@@ -48,34 +48,6 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 		align-items: center;
 		justify-content: space-between;
 		gap: $spacing-20;
-		opacity: 0;
-	}
-
-	.about-content.animate {
-		animation: opacity-reveal 0.8s ease-out forwards;
-
-		.about-logo-block {
-			animation: slide-from-left 0.8s ease-out forwards;
-		}
-
-		.about-text-block {
-			animation: slide-from-right 0.8s ease-out forwards;
-		}
-	}
-
-	@keyframes slide-from-left {
-		from { transform: translateX(-100%); }
-		to   { transform: translateX(0); }
-	}
-
-	@keyframes slide-from-right {
-		from { transform: translateX(100%); }
-		to   { transform: translateX(0); }
-	}
-
-	@keyframes opacity-reveal {
-		from { opacity: 0; }
-		to   { opacity: 1; }
 	}
 
 	.about-logo-block {
@@ -107,13 +79,6 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 			flex-direction: column;
 			gap: $spacing-12;
 		}
-
-		.about-content.animate {
-			.about-logo-block,
-			.about-text-block {
-				animation: none;
-			}
-		}
 	}
 
 	@include media-down(md) {
@@ -135,46 +100,8 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 			background: none;
 		}
 
-		.about-content {
-			opacity: 1 !important;
-		}
-
-		.about-content.animate {
-			.about-logo-block {
-				animation: slide-from-left 0.8s ease-out forwards;
-			}
-
-			.about-text-block {
-				animation: slide-from-right 0.8s ease-out forwards;
-			}
-		}
-
-		.about-logo-block,
-		.about-text-block {
-			transform: none !important;
-		}
-
 		.about-logo-block img {
 			width: 160px;
 		}
 	}
 </style>
-
-<script>
-	const content = document.querySelector('.about-content') as HTMLElement;
-	const threshold = window.innerWidth < 1024 ? 0.2 : 0.4;
-
-	const observer = new IntersectionObserver(
-		(entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					content.classList.add('animate');
-					observer.unobserve(entry.target);
-				}
-			});
-		},
-		{ threshold }
-	);
-
-	observer.observe(content);
-</script>

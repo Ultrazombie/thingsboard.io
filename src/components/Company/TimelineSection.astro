@@ -32,7 +32,7 @@ const eventOf = (text: string) => {
 ---
 
 <section class="timeline-section">
-	<div class="timeline-wrapper">
+	<div class="timeline-wrapper" data-reveal>
 		<div class="timeline-viewport">
 			<div class="timeline-track">
 				{timeline.map((item) => (
@@ -77,21 +77,6 @@ const eventOf = (text: string) => {
 	.timeline-section {
 		background: var(--color-bg-surface);
 		padding: $spacing-12 0 $spacing-20;
-		opacity: 0;
-	}
-
-	.timeline-section.animate {
-		animation: reveal-ltr 0.8s ease-in-out forwards, opacity-reveal 1.5s ease-out forwards;
-	}
-
-	@keyframes reveal-ltr {
-		from { clip-path: inset(0 100% 0 0); }
-		to   { clip-path: inset(0 0 0 0); }
-	}
-
-	@keyframes opacity-reveal {
-		from { opacity: 0; }
-		to   { opacity: 1; }
 	}
 
 	// Margin, not padding: the arrows hang off this box's edges, so the box is the measure itself.
@@ -231,9 +216,6 @@ const eventOf = (text: string) => {
 			align-items: flex-start;
 			gap: $spacing-2;
 			color: var(--color-text-secondary);
-			opacity: 0;
-			transform: translateY(20px);
-			transition: opacity 0.5s ease, transform 0.5s ease;
 		}
 	}
 
@@ -244,14 +226,6 @@ const eventOf = (text: string) => {
 		// Centred on the first 24px line.
 		margin-top: 3px;
 		color: var(--event-color);
-	}
-
-	/* Revealed state (set once by the entrance animation) */
-	.timeline-item.active {
-		.timeline-text li {
-			opacity: 1;
-			transform: translateY(0);
-		}
 	}
 
 	// Round kit buttons on the rail's axis, over the faded edges; one with no more years past it fades
@@ -323,11 +297,6 @@ const eventOf = (text: string) => {
 	}
 
 	@media print {
-		.timeline-section {
-			opacity: 1 !important;
-			clip-path: none !important;
-		}
-
 		.timeline-viewport {
 			overflow: visible;
 			mask-image: none;
@@ -343,16 +312,10 @@ const eventOf = (text: string) => {
 			flex: 0 0 33.333%;
 			break-inside: avoid;
 		}
-
-		.timeline-text li {
-			opacity: 1;
-			transform: none;
-		}
 	}
 </style>
 
 <script>
-	const section = document.querySelector('.timeline-section') as HTMLElement;
 	const track = document.querySelector('.timeline-track') as HTMLElement;
 	const prevBtn = document.querySelector('.timeline-nav--prev') as HTMLButtonElement;
 	const nextBtn = document.querySelector('.timeline-nav--next') as HTMLButtonElement;
@@ -442,33 +405,6 @@ const eventOf = (text: string) => {
 		if (offset > total - visible) offset = Math.max(0, total - visible);
 		updateTrack();
 	});
-
-	function activateItem(item: Element): void {
-		item.classList.add('active');
-		const lis = item.querySelectorAll('.timeline-text li');
-		const last = lis.length - 1;
-		lis.forEach((li, i) => {
-			(li as HTMLElement).style.transitionDelay = `${(last - i) * 125}ms`;
-		});
-	}
-
-	// Reveal animation on scroll — section fades in, then items activate newest→oldest
-	const observer = new IntersectionObserver(
-		(entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					section.classList.add('animate');
-					const reversed = Array.from(items).reverse();
-					reversed.forEach((item, i) => {
-						setTimeout(() => activateItem(item), i * 300);
-					});
-					observer.unobserve(entry.target);
-				}
-			});
-		},
-		{ threshold: 0.5 }
-	);
-	observer.observe(section);
 
 	updateTrack();
 </script>
