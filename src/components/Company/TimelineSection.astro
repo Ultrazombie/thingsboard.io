@@ -74,9 +74,15 @@ const eventOf = (text: string) => {
 	// How far the rail fades towards an edge with more years past it.
 	$edge-fade: 96px;
 
+	// The second half of History's tinted band: 48 under the history (32 on phones), and the band's
+	// 64 (48) to close it.
 	.timeline-section {
-		background: var(--color-bg-surface);
-		padding: $spacing-12 0 $spacing-20;
+		background: var(--band-tint);
+		padding: $spacing-12 0 $spacing-16;
+
+		@include media-down(md) {
+			padding-block: $spacing-8 $spacing-12;
+		}
 	}
 
 	// Margin, not padding: the arrows hang off this box's edges, so the box is the measure itself.

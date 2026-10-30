@@ -29,14 +29,15 @@ import historyImg from '~/assets/images/company-images/history-image.webp';
 <style lang="scss">
 	@use '../../styles/variables' as *;
 
+	// History and its timeline share one tinted band: this half opens it with the band's 64 (48 on
+	// phones) and the timeline closes it.
 	.history-section {
-		background: var(--color-bg-surface);
-		overflow: hidden;
-	}
+		background: var(--band-tint);
+		padding: $spacing-16 var(--band-gutter) 0;
 
-	.history-container {
-		padding-inline: var(--band-gutter);
-		overflow: hidden;
+		@include media-down(md) {
+			padding-top: $spacing-12;
+		}
 	}
 
 	.section-title {
@@ -44,8 +45,11 @@ import historyImg from '~/assets/images/company-images/history-image.webp';
 		font-weight: $font-weight-bold;
 		color: var(--color-text);
 		text-align: center;
-		padding: $spacing-12 0;
-		margin: 0;
+		margin: 0 0 $spacing-10;
+
+		@include media-down(md) {
+			margin-bottom: $spacing-8;
+		}
 	}
 
 	.history-content {
@@ -53,19 +57,19 @@ import historyImg from '~/assets/images/company-images/history-image.webp';
 		justify-content: space-between;
 		align-items: flex-start;
 		gap: $spacing-20;
-		padding-bottom: $spacing-12;
 	}
 
 	.history-text-block {
 		display: flex;
 		flex-direction: column;
-		gap: $spacing-6;
+		gap: $spacing-4;
 	}
 
 	.history-text {
-		@include body-text;
+		@include type-body;
 		color: var(--color-text-secondary);
 		margin: 0;
+		text-wrap: pretty;
 
 		a {
 			color: var(--accent-ink);
@@ -82,18 +86,14 @@ import historyImg from '~/assets/images/company-images/history-image.webp';
 		max-width: 400px;
 		height: auto;
 		flex-shrink: 0;
+		border-radius: $radius-xl;
 	}
 
 	@include media-down(lg) {
 		.history-content {
 			flex-direction: column-reverse;
 			align-items: center;
-		}
-	}
-
-	@include media-down(md) {
-		.section-title {
-			padding: $spacing-14 0 $spacing-8;
+			gap: $spacing-8;
 		}
 	}
 

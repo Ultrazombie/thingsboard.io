@@ -32,7 +32,8 @@ import Mark from '../ui/Mark.astro';
 	@use '../../styles/variables' as *;
 
 	.contacts-wrapper {
-		padding: $spacing-30 var(--band-gutter);
+		// 48 under the team, as between any two sections; 80 down to the footer.
+		padding: $spacing-12 var(--band-gutter) $spacing-20;
 		font-style: normal;
 	}
 
@@ -78,14 +79,16 @@ import Mark from '../ui/Mark.astro';
 	}
 
 	@include media-down(lg) {
-		.contacts-wrapper {
-			padding-block: $spacing-16;
-		}
-
 		.contacts-list {
 			gap: $spacing-8;
 			flex-direction: column;
 			align-items: flex-start;
+		}
+	}
+
+	@include media-down(md) {
+		.contacts-wrapper {
+			padding-block: $spacing-8 $spacing-12;
 		}
 	}
 

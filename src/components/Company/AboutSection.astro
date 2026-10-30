@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import '@styles/ui-kit.scss';
-import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
+import tbLogo from '~/assets/images/company-images/thingsboard_black.svg';
 ---
 
 <section class="about-section">
@@ -9,10 +9,10 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 		<h1 class="section-title">About Us</h1>
 		<div class="about-content" data-reveal>
 			<div class="about-logo-block">
-				<Image src={tbLogo} alt="ThingsBoard logo" width={257} height={257} />
+				<Image src={tbLogo} alt="ThingsBoard logo" width={168} height={156} />
 			</div>
 			<div class="about-text-block">
-				<p class="about-text">At ThingsBoard, we help organizations worldwide unlock the full potential of IoT. Established with a vision to simplify and accelerate IoT adoption, we provide a complete, source-available IoT platform that enables easy device connectivity, data collection, processing, visualization, and management.</p>
+				<p class="about-text about-text--lede">At ThingsBoard, we help organizations worldwide unlock the full potential of IoT. Established with a vision to simplify and accelerate IoT adoption, we provide a complete, source-available IoT platform that enables easy device connectivity, data collection, processing, visualization, and management.</p>
 				<p class="about-text">Our mission is to make IoT technology accessible, scalable, and flexible for organizations of all sizes. We empower businesses to optimize operations, reduce costs, and unlock new opportunities using cutting-edge tools and technologies.</p>
 				<p class="about-text">Over a thousand organizations across industries such as energy, agriculture, retail, telecom, healthcare, and Industry 4.0 trust ThingsBoard to manage their devices and produce insights. Together, we are driving the future of IoT.</p>
 			</div>
@@ -23,15 +23,16 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 <style lang="scss">
 	@use '../../styles/variables' as *;
 
+	// The page's rhythm: 48px above and below a section on the white ground (96 between two of them),
+	// 64 inside a tinted band; 32 and 48 on phones. Headings sit 40 above their content. This one opens
+	// under the photo strip, a different ground, so it takes the band's step on top.
 	.about-section {
-		background: var(--band-tint);
-		padding: $spacing-12 0;
-		overflow: hidden;
-	}
+		background: var(--color-bg-surface);
+		padding: $spacing-16 var(--band-gutter) $spacing-12;
 
-	.about-container {
-		padding-inline: var(--band-gutter);
-		overflow: hidden;
+		@include media-down(md) {
+			padding-block: $spacing-12 $spacing-8;
+		}
 	}
 
 	.section-title {
@@ -39,69 +40,166 @@ import tbLogo from '~/assets/images/company-images/thingsboard_blue.svg';
 		font-weight: $font-weight-bold;
 		color: var(--color-text);
 		text-align: center;
-		padding: 0;
-		margin: 0 0 $spacing-12;
+		margin: 0 0 $spacing-10;
+
+		@include media-down(md) {
+			margin-bottom: $spacing-8;
+		}
 	}
 
+	// The logo's tile in a third, the words in the other two; stacked below lg, the tile a wide strip.
 	.about-content {
-		display: flex;
+		display: grid;
+		grid-template-columns: 1fr 2fr;
 		align-items: center;
-		justify-content: space-between;
-		gap: $spacing-20;
+		gap: $spacing-12;
+
+		@include media-down(lg) {
+			grid-template-columns: 1fr;
+			gap: $spacing-8;
+		}
 	}
 
+	// The ring's radius, animated: a registered property, so the mask's stops can tween.
+	// The ring's progress out from the logo, 0 to 1: a registered property, so the mask can tween.
+	@property --about-ring {
+		syntax: '<number>';
+		inherits: false;
+		initial-value: 0;
+	}
+
+	// A white tile with a 24px dot grid. The dots clear in a circle around the logo and run at full
+	// strength out to the edges and corners. Over them a ring of accent dots spreads slowly from the
+	// clear circle to the corners, like a signal; under reduced motion there is no ring.
+	//   --tile-clear  the clear circle's radius, where the grid starts to show
+	//   --tile-full   where the grid is at full strength
+	//   --ring-end    how far the ring travels (past the corners)
 	.about-logo-block {
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+		--tile-clear: 112px;
+		--tile-full: 140px;
+		--ring-end: 250px;
+
+		position: relative;
+		display: grid;
+		place-items: center;
+		aspect-ratio: 1;
+		overflow: hidden;
+		border-radius: $radius-xl;
+		background: var(--color-bg-surface);
+
+		&::before,
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background-size: 24px 24px;
+			background-position: center;
+		}
+
+		&::before {
+			background-image: radial-gradient(
+				circle,
+				color-mix(in srgb, var(--color-text) 26%, transparent) 1.25px,
+				transparent 1.75px
+			);
+			mask-image: radial-gradient(circle, transparent var(--tile-clear), #000 var(--tile-full));
+		}
+
+		// The same grid in the accent, seen only through the moving ring and never inside the clear
+		// circle: the two masks intersect.
+		&::after {
+			--_r: calc(var(--tile-clear) + var(--about-ring) * (var(--ring-end) - var(--tile-clear)));
+
+			background-image: radial-gradient(circle, var(--accent-fill) 1.75px, transparent 2.25px);
+			mask-image:
+				radial-gradient(
+					circle,
+					transparent calc(var(--_r) - 28px),
+					#000 var(--_r),
+					transparent calc(var(--_r) + 28px)
+				),
+				radial-gradient(circle, transparent var(--tile-clear), #000 var(--tile-full));
+			mask-composite: intersect;
+			opacity: 0;
+			animation: about-signal 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+
+			@media (prefers-reduced-motion: reduce) {
+				content: none;
+			}
+		}
 
 		img {
-			width: 400px;
+			position: relative;
+			z-index: 1;
+			width: 168px;
 			height: auto;
+		}
+
+		// Stacked: a wide strip, a smaller logo, and a ring that travels to the strip's far ends.
+		@include media-down(lg) {
+			--tile-clear: 92px;
+			--tile-full: 118px;
+			--ring-end: 420px;
+
+			aspect-ratio: 2 / 1;
+
+			img {
+				width: 132px;
+			}
+		}
+	}
+
+	@keyframes about-signal {
+		0% {
+			--about-ring: 0;
+			opacity: 0;
+		}
+
+		15% {
+			opacity: 0.75;
+		}
+
+		75%,
+		100% {
+			--about-ring: 1;
+			opacity: 0;
 		}
 	}
 
 	.about-text-block {
 		display: flex;
 		flex-direction: column;
-		gap: $spacing-6;
+		gap: $spacing-4;
 	}
 
 	.about-text {
-		@include body-text;
+		@include type-body;
 		color: var(--color-text-secondary);
 		margin: 0;
+		text-wrap: pretty;
 	}
 
-	@include media-down(lg) {
-		.about-content {
-			flex-direction: column;
-			gap: $spacing-12;
-		}
-	}
-
-	@include media-down(md) {
-		.about-section {
-			padding: $spacing-16 0;
-		}
-
-		.section-title {
-			margin-bottom: $spacing-8;
-		}
-
-		.about-logo-block img {
-			width: 160px;
-		}
+	// The first paragraph leads: a step up, in the heading's ink.
+	.about-text--lede {
+		@include type-lede;
+		color: var(--color-text);
+		margin-bottom: $spacing-2;
 	}
 
 	@media print {
-		.about-section {
+		.about-logo-block {
+			aspect-ratio: auto;
 			background: none;
-		}
+			justify-items: start;
 
-		.about-logo-block img {
-			width: 160px;
+			&::before,
+			&::after {
+				content: none;
+			}
+
+			img {
+				width: 120px;
+			}
 		}
 	}
 </style>

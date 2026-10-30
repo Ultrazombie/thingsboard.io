@@ -125,7 +125,11 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 	.team-section {
 		background: var(--color-bg-surface);
 		color: var(--color-text);
-		padding: $spacing-12 0 $spacing-20;
+		padding: $spacing-12 0;
+
+		@include media-down(md) {
+			padding-block: $spacing-8;
+		}
 	}
 
 	.team-wrapper {
@@ -476,7 +480,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 	.team-join {
 		display: flex;
 		justify-content: center;
-		margin-top: $spacing-20;
+		margin-top: $spacing-12;
 	}
 
 	// Phones: three to a row in the panels, two in the leaders.
