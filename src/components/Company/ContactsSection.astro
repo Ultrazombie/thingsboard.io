@@ -6,15 +6,24 @@ import Mark from '../ui/Mark.astro';
 	<ul class="contacts-list">
 		<li>
 			<Mark size={40} icon="tabler:phone" fill="wash" />
-			<a href="tel:+12123344096">+1 212 334 4096</a>
+			<span class="contacts-item">
+				<span class="contacts-label">Phone</span>
+				<a href="tel:+12123344096">+1 212 334 4096</a>
+			</span>
 		</li>
 		<li>
 			<Mark size={40} icon="tabler:map-pin" fill="wash" />
-			<span>110 Duane Street, Suite 1C, New York, NY 10007, USA</span>
+			<span class="contacts-item">
+				<span class="contacts-label">Address</span>
+				<span>110 Duane Street, Suite 1C, New York, NY 10007, USA</span>
+			</span>
 		</li>
 		<li>
 			<Mark size={40} icon="tabler:mail" fill="wash" />
-			<a href="mailto:info@thingsboard.io">info@thingsboard.io</a>
+			<span class="contacts-item">
+				<span class="contacts-label">Email</span>
+				<a href="mailto:info@thingsboard.io">info@thingsboard.io</a>
+			</span>
 		</li>
 	</ul>
 </address>
@@ -30,7 +39,7 @@ import Mark from '../ui/Mark.astro';
 	.contacts-list {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		gap: $spacing-5;
 		flex-wrap: wrap;
 		list-style: none;
@@ -42,6 +51,7 @@ import Mark from '../ui/Mark.astro';
 			align-items: center;
 			gap: $spacing-3;
 			font-size: $font-size-lg;
+			line-height: 1.4;
 			color: var(--color-text-secondary);
 		}
 
@@ -53,6 +63,18 @@ import Mark from '../ui/Mark.astro';
 				text-decoration: underline;
 			}
 		}
+	}
+
+	// Each value under its small heading, both beside the mark.
+	.contacts-item {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.contacts-label {
+		@include type-eyebrow;
+		color: var(--color-text-muted);
 	}
 
 	@include media-down(lg) {
