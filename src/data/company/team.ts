@@ -79,7 +79,7 @@ export const teamTabs: TeamTab[] = [
 				],
 			},
 			{
-				label: 'EDGE',
+				label: 'Edge',
 				members: [
 					{ src: `${base}/leadership/volodymyr-babak.webp`, alt: 'Volodymyr Babak', title: 'Volodymyr Babak', description: 'Director of Cloud Services' },
 					{ src: `${base}/edge/andrii-landiak.webp`, alt: 'Andrii Landiak', title: 'Andrii Landiak', description: 'Java Engineer' },
@@ -237,7 +237,7 @@ export const teamTabs: TeamTab[] = [
 				label: 'Office & IMS',
 				members: [
 					{ src: `${base}/operation-team/anastasiia-orlata.webp`, alt: 'Anastasiia Orlata', title: 'Anastasiia Orlata', description: 'Office Manager' },
-					{ src: placeholder, alt: 'Oleh Reutskyi', title: 'Oleh Reutskyi', description: 'IMS manager' },
+					{ src: placeholder, alt: 'Oleh Reutskyi', title: 'Oleh Reutskyi', description: 'IMS Manager' },
 				],
 			},
 		],

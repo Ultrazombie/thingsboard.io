@@ -5,12 +5,12 @@
  * (ui-kit.scss, _variables.scss); the cards are buttons, which ui/Card does not cover yet, so their
  * surface is written here with the kit's own values.
  */
-import { teamTabs, type TeamMember, type TeamTab } from '~/data/company/team';
+import { teamTabs, type TeamMember, type TeamTab } from '@data/company/team';
 import { CAREERS_URL } from '@models/careers';
-import SectionHeader from '../Landing/SectionHeader.astro';
-import CardGrid from '../ui/CardGrid.astro';
-import Button from '../ui/Button.astro';
-import Chip from '../ui/Chip.astro';
+import SectionHeader from '@components/Landing/SectionHeader.astro';
+import CardGrid from '@components/ui/CardGrid.astro';
+import Button from '@components/ui/Button.astro';
+import Chip from '@components/ui/Chip.astro';
 import '@styles/ui-kit.scss';
 
 // First tab = the leadership row; every other tab is a department card
@@ -44,7 +44,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 		<ul class="leaders">
 			{leadership.clusters.flatMap((c) => c.members).map((member) => (
 				<li class="person person--lead">
-					<img src={member.src} alt={member.alt} width="240" height="240" loading="lazy" />
+					<img src={member.src} alt={isPlaceholder(member) ? '' : member.alt} width="240" height="240" loading="lazy" />
 					<span class="person-name">{member.title}</span>
 					<span class="person-role">{member.description}</span>
 				</li>
@@ -52,7 +52,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 		</ul>
 
 		<h3 class="team-eyebrow">Departments</h3>
-		<CardGrid cols={3}>
+		<CardGrid cols={3} class="team__grid">
 			{cards.map(({ tab, id, count, stack, more }) => (
 				<button type="button" class="dept-card" data-team={id} aria-expanded="false" aria-controls={id}>
 					<span class="dept-card__top">
@@ -97,7 +97,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 								<ul class="team-group__people">
 									{cluster.members.map((member) => (
 										<li class="person">
-											<img src={member.src} alt={member.alt} width="240" height="240" loading="lazy" />
+											<img src={member.src} alt={isPlaceholder(member) ? '' : member.alt} width="240" height="240" loading="lazy" />
 											<span class="person-name">{member.title}</span>
 											<span class="person-role">{member.description}</span>
 										</li>
@@ -179,7 +179,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 			margin-bottom: $spacing-3;
 			border-radius: 50%;
 			object-fit: cover;
-			// The team photos are cut-outs shot for this grey backdrop; any other ground washes them out.
+			// The team photos are cut-outs shot for this gray backdrop; any other ground washes them out.
 			background: $photo-backdrop;
 			box-shadow: var(--elev-mark);
 		}
@@ -216,7 +216,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 	}
 
 	// Department card: the kit's tile values (r8, surface, a line on white), as a button.
-	// Hover deepens the lift and fills the chevron; the title keeps its colour (the accent title is the
+	// Hover deepens the lift and fills the chevron; the title keeps its color (the accent title is the
 	// kit's cue for a card that navigates away, and this one only opens a panel). Nothing translates.
 	.dept-card {
 		position: relative;
@@ -522,7 +522,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 	}
 
 	@media print {
-		:global(.ui-card-grid) {
+		.team__grid {
 			display: none;
 		}
 
@@ -549,7 +549,7 @@ const careersExternal = /^https?:\/\//.test(CAREERS_URL);
 	document.documentElement.classList.add('js-team');
 
 	const section = document.querySelector<HTMLElement>('.team-section')!;
-	const grid = section.querySelector<HTMLElement>('.ui-card-grid')!;
+	const grid = section.querySelector<HTMLElement>('.team__grid')!;
 	const pool = section.querySelector<HTMLElement>('.panel-pool')!;
 	const cards = [...grid.querySelectorAll<HTMLButtonElement>('.dept-card')];
 	let active: HTMLButtonElement | null = null;
